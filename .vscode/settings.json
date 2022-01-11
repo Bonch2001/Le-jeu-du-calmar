@@ -1,5 +1,6 @@
 {
-    "files.associations": {
+    "files.associations": 
+    {
         "array": "cpp",
         "atomic": "cpp",
         "*.tcc": "cpp",
