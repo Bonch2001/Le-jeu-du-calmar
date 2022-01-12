@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// base class for both Contestants and Supervisors
 class Player
 {
 public:
@@ -25,14 +26,51 @@ public:
 
 class Contestant : public Player
 {
+public:
     int number;
-    using Player::Player;
+    void setNumber(int n)
+    {
+        this->number = n;
+    }
+    int getNumber()
+    {
+        return this->number;
+    }
+    int Supervisor;
+    void setSupervisor(int b)
+    {
+        this->Supervisor = b;
+    }
+    int getSupervisor()
+    {
+        return this->Supervisor;
+    }
+    using Player::Player; // using the same constructor as the base class
 };
 
 class Supervisor : public Player
 {
+public:
     string mask;
-    using Player::Player;
+    void setMask(string m)
+    {
+        this->mask = m;
+    }
+    string getMask()
+    {
+        return this->mask;
+    }
+    int Contestants[11];
+    void setContestants(int a[11])
+    {
+        for (int i = 0; i < 11; i++)
+            this->Contestants[i] = a[i];
+    }
+    int *getContestants()
+    {
+        return this->Contestants;
+    }
+    using Player::Player; // using the same constructor as the base class
 };
 
 string nameGenerator(int length)
@@ -44,19 +82,21 @@ string nameGenerator(int length)
         name += rand() % 26 + 97;
     }
     return name;
-}
+} // function that generate a name of a specified length
 
 int main()
 {
     vector<Contestant> contestants;
     vector<Supervisor> supervisors;
-    int i, j, nameLength, surnameLength, cityLength,  debt, weight;
-    string name, surname, city;
+    int i, j, k, nameLength, surnameLength, cityLength, debt, weigth, maskID, maskNumber[3] = {0, 0, 0}, v[11], global[99] = {}, contestantID, check;
+    string name, surname, city, mask, maskTypes[3] = {"rectangle", "triangle", "circle"};
 
     srand(time(NULL));
 
+    // generate the contestants
     for (i = 0; i < 99; i++)
     {
+        // assign random name, surname, city, debt and weight for each contestant
         nameLength = rand() % 12 + 2;
         name = nameGenerator(nameLength);
 
@@ -68,10 +108,94 @@ int main()
 
         debt = rand() % 90001 + 10000;
 
-        weight = rand() % 51 + 50;
+        weigth = rand() % 51 + 50;
 
-        //cout << name <<" "<< surname <<" "<< city <<" "<< debt<<" "<< weight << endl;
+        Contestant c = Contestant(name, surname, city, debt, weigth); // create the object
+        c.setNumber(i + 1);                                           // assign an ID to the contestant
+
+        contestants.push_back(c); // add the created object to the vector of contestants
     }
+
+    // generate the supervisors
+    for (i = 0; i < 9; i++)
+    {
+        // assign random name, surname, city, debt and weight for each supervisor
+        nameLength = rand() % 12 + 2;
+        name = nameGenerator(nameLength);
+
+        surnameLength = rand() % 12 + 2;
+        surname = nameGenerator(surnameLength);
+
+        cityLength = rand() % 12 + 2;
+        city = nameGenerator(cityLength);
+
+        debt = rand() % 90001 + 10000;
+
+        weigth = rand() % 51 + 50;
+
+        Supervisor s = Supervisor(name, surname, city, debt, weigth); // create the object
+
+        do
+        {
+            maskID = rand() % 3;
+            maskNumber[maskID]++;
+        } while (maskNumber[maskID] > 3); // generate a random yet valid mask
+        mask = maskTypes[maskID];
+        s.setMask(mask); // assign a random mask to the supervisor
+
+        supervisors.push_back(s); // add the created object to the vector of supervisors
+    }
+
+    // print the contestants
+    cout << endl
+         << "CONTESTANTS"
+         << endl
+         << "Number "
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Debt "
+         << "Weight"
+         << endl;
+    for (i = 0; i < 99; i++)
+        cout << contestants[i].number << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+
+    // print the supervisors
+    cout << endl
+         << "SUPERVISORS"
+         << endl
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Debt "
+         << "Weight"
+         << "Mask "
+         << endl;
+    for (i = 0; i < 9; i++)
+        cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].debt << " " << supervisors[i].weigth << " " << supervisors[i].mask << endl;
+
+    // assign a number of 11 contestants to each supervisor
+    for (i = 0; i < 9; i++)
+    {
+        for (j = 0; j < 11; j++) // vector of contestants' numbers assigned to each supervisor
+            v[j] = 0;
+        for (j = 0; j < 11; j++)
+        {
+            do
+            {
+                contestantID = rand() % 99 + 1;      // generate a random ID of the contestants
+            } while (global[contestantID - 1] != 0); // check if the ID wasn't already assigned
+            global[contestantID - 1] = 1;            // modify the global frequency vector of IDs
+            v[j] = contestantID;                     // add the ID to the vector of contestants
+        }
+        supervisors[i].setContestants(v); // assign the vector to the supervisor
+    }
+
+    // based on the previous step, assign to each contestant the number of his supervisor
+
+    for (i = 0; i < 9; i++)                                                   // iterate through all supervisors
+        for (j = 0; j < 11; j++)                                              // iterate through the contestants of each supervisor
+            contestants[supervisors[i].getContestants()[j]].setSupervisor(i); // the supervisors don't have IDs, so use the position in the vector
 
     return 0;
 }
