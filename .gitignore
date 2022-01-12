@@ -1,5 +1,6 @@
+# Compiled source #
+
 # ignore executable files
 *.exe
-
 # ignore object files
 *.o
