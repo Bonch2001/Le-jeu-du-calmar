@@ -254,5 +254,30 @@ int main()
     for (i = 0; i < contestants.size(); i++)
         cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
 
+    // SECOND GAME: "TUG OF WAR"
+    k = contestants.size() % 4; // find how many players are lucky
+    for (i = 0; i < k; i++)
+    {
+        do
+        {
+            contestantID = rand() % 99 + 1; // generate a random ID of the contestants
+        } while (contestants[contestantID - 1].wildcard == true);
+        contestants[contestantID - 1].wildcard = true;
+    }
+    k = (int)contestants.size() / 4; // theoretical number of contestants in a team
+    for (i = 0; i < 4; i++)
+    {
+        j = 0; // practical number of contestants in a team
+        while (j < k)
+        {
+            do
+            {
+                contestantID = rand() % 50 + 1;                 // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;             // assign contestant to the team
+            j++;                                                // increment the number of contestants of the team
+        }
+    }
+
     return 0;
 }
