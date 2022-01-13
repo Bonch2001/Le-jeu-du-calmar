@@ -27,6 +27,8 @@ public:
 class Contestant : public Player
 {
 public:
+    bool wildcard = false; // needed later in case the player remain without a team
+    int team = -1;         // needed later when dividing contestants in teams
     int number;
     void setNumber(int n)
     {
@@ -158,7 +160,7 @@ int main()
          << "Weight"
          << endl;
     for (i = 0; i < 99; i++)
-        cout << contestants[i].number << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
 
     // print the supervisors
     cout << endl
@@ -172,7 +174,7 @@ int main()
          << "Mask "
          << endl;
     for (i = 0; i < 9; i++)
-        cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].debt << " " << supervisors[i].weigth << " " << supervisors[i].mask << endl;
+        cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].debt << " " << supervisors[i].weigth << " " << supervisors[i].getMask() << endl;
 
     // assign a number of 11 contestants to each supervisor
     for (i = 0; i < 9; i++)
@@ -192,10 +194,65 @@ int main()
     }
 
     // based on the previous step, assign to each contestant the number of his supervisor
+    for (i = 0; i < 9; i++)                                                           // iterate through all supervisors
+        for (j = 0; j < 11; j++)                                                      // iterate through the contestants of each supervisor
+            contestants[supervisors[i].getContestants()[j] - 1].setSupervisor(i + 1); // the supervisors don't have IDs, so use the position in the vector
 
-    for (i = 0; i < 9; i++)                                                   // iterate through all supervisors
-        for (j = 0; j < 11; j++)                                              // iterate through the contestants of each supervisor
-            contestants[supervisors[i].getContestants()[j]].setSupervisor(i); // the supervisors don't have IDs, so use the position in the vector
+    // print the contestants and their supervisors
+    cout << endl
+         << "CONTESTANTS EXTENDED"
+         << endl
+         << "Number "
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Debt "
+         << "Weight "
+         << "Supervisor"
+         << endl;
+    for (i = 0; i < 99; i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << " " << contestants[i].getSupervisor() << endl;
+
+    // print the supervisors and their contestants
+    cout << endl
+         << "SUPERVISORS EXTENDED"
+         << endl
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Debt "
+         << "Weight "
+         << "Mask "
+         << "Contestants"
+         << endl;
+    for (i = 0; i < 9; i++)
+    {
+        cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].debt << " " << supervisors[i].weigth << " " << supervisors[i].getMask() << " ";
+        for (j = 0; j < 11; j++)
+            cout << supervisors[i].getContestants()[j] << " ";
+        cout << endl;
+    }
+
+    // FIRST GAME: "RED LIGHT GREEN LIGHT"
+    for (i = 0; i < contestants.size(); i++)
+        if (contestants[i].getNumber() % 2 == 0)
+        {
+            contestants.erase(contestants.begin() + i);
+        }
+
+    // print the remaining contestants after first round
+    cout << endl
+         << "CONTESTANTS AFTER FIRST ROUND"
+         << endl
+         << "Number "
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Debt "
+         << "Weight"
+         << endl;
+    for (i = 0; i < contestants.size(); i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
 
     return 0;
 }
