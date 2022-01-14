@@ -410,7 +410,7 @@ int main()
     for (i = 0; i < contestants.size(); i++)
         cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
 
-    for (i = 0; i < contestants.size() and contestants.size() > 14; i++) // remove some contestants
+    for (i = 0; i < contestants.size() && contestants.size() > 14; i++) // remove some contestants
         contestants.erase(contestants.begin() + i);
 
     // print the remaining contestants after second round
@@ -433,6 +433,74 @@ int main()
     {
         contestants[i].team = -1;
         contestants[i].wildcard = false;
+    }
+
+    // THIRD GAME: "MARBLES"
+    k = (int)contestants.size() / 2; // theoretical number of teams
+    for (i = 0; i < k; i++)
+    {
+        j = 0; // practical number of contestants in a team
+        while (j < 2)
+        {
+            do
+            {
+                contestantID = rand() % contestants.size() + 1;                                                   // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1 || contestants[contestantID - 1].wildcard == true); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;                                                               // assign contestant to the team
+            j++;                                                                                                  // increment the number of contestants of the team
+        }
+    }
+    int random1, random2;
+    for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
+    {
+        for (j = i + 1; j < contestants.size(); j++)        // iterate through contestants
+            if (contestants[i].team == contestants[j].team) // check if the two contestants have the same team
+            {
+            marbles:
+                try
+                {
+                    random1 = rand() % 999 + 1; // generate a random number for first contestant
+                    random2 = rand() % 999 + 1; // generate a random number for second contestant
+                    if (random1 < random2)      // compare the generated numbers
+                    {
+                        contestants.erase(contestants.begin() + j);
+                        break;
+                    }
+                    else if (random2 < random1)
+                    {
+                        contestants.erase(contestants.begin() + i);
+                        i--;
+                        break;
+                    }
+                    else
+                        throw "Generated values are equal!";
+                }
+                catch (string s)
+                {
+                    goto marbles;
+                }
+            }
+    }
+
+    // print the remaining contestants after third round
+    cout
+        << endl
+        << "CONTESTANTS AFTER THIRD ROUND"
+        << endl
+        << "Number "
+        << "Name "
+        << "Surname "
+        << "City "
+        << "Debt "
+        << "Weight"
+        << endl;
+    for (i = 0; i < contestants.size(); i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+
+    // cancel the previous teams
+    for (i = 0; i < contestants.size(); i++)
+    {
+        contestants[i].team = -1;
     }
 
     return 0;
