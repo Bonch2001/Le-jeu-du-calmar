@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <algorithm>
 
 using namespace std;
 
@@ -170,8 +171,8 @@ int main()
          << "Surname "
          << "City "
          << "Debt "
-         << "Weight"
-         << "Mask "
+         << "Weight "
+         << "Mask"
          << endl;
     for (i = 0; i < 9; i++)
         cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].debt << " " << supervisors[i].weigth << " " << supervisors[i].getMask() << endl;
@@ -260,7 +261,7 @@ int main()
     {
         do
         {
-            contestantID = rand() % 99 + 1; // generate a random ID of the contestants
+            contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
         } while (contestants[contestantID - 1].wildcard == true);
         contestants[contestantID - 1].wildcard = true;
     }
@@ -272,11 +273,166 @@ int main()
         {
             do
             {
-                contestantID = rand() % 50 + 1;                 // generate a random ID of the contestants
-            } while (contestants[contestantID - 1].team != -1); // test if the contestant has already a team
-            contestants[contestantID - 1].team = i;             // assign contestant to the team
-            j++;                                                // increment the number of contestants of the team
+                contestantID = rand() % contestants.size() + 1;                                                   // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1 || contestants[contestantID - 1].wildcard == true); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;                                                               // assign contestant to the team
+            j++;                                                                                                  // increment the number of contestants of the team
         }
+    }
+
+    cout << endl;
+    // code to test the composition of the teams
+    for (i = 0; i < 4; i++)
+    {
+        cout << "Team " << i + 1 << ": ";
+        for (j = 0; j < contestants.size(); j++)
+            if (contestants[j].team == i)
+                cout << contestants[j].number << " ";
+        cout << endl;
+    }
+    cout << "Lucky players: ";
+    for (j = 0; j < contestants.size(); j++)
+        if (contestants[j].wildcard == true)
+            cout << contestants[j].number << " ";
+    cout << endl;
+
+    // calculate the weigths of each team
+    int team1Weigth = 0, team2Weigth = 0, team3Weigth = 0, team4Weigth = 0, winner1, winner2, winnerWeigth1, winnerWeigth2;
+    for (i = 0; i < contestants.size(); i++)
+        switch (contestants[i].team) // add each player's weigth to his team's total weigth
+        {
+        case 0:
+            team1Weigth += contestants[i].weigth;
+            break;
+        case 1:
+            team2Weigth += contestants[i].weigth;
+            break;
+        case 2:
+            team3Weigth += contestants[i].weigth;
+            break;
+        case 3:
+            team4Weigth += contestants[i].weigth;
+            break;
+        default:
+            break;
+        }
+
+    cout << "Team 1 weigth: " << team1Weigth << endl;
+    cout << "Team 2 weigth: " << team2Weigth << endl;
+    cout << "Team 3 weigth: " << team3Weigth << endl;
+    cout << "Team 4 weigth: " << team4Weigth << endl;
+
+    // team 1 vs team 2
+    if (team1Weigth < team2Weigth)
+    {
+        winner1 = 1;                             // save the index of winning team
+        winnerWeigth1 = team2Weigth;             // save the weigth of winning team
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
+            if (contestants[i].team == 0)
+                contestants.erase(contestants.begin() + i);
+    }
+    else
+    {
+        winner1 = 0;
+        winnerWeigth1 = team1Weigth;
+        for (i = 0; i < contestants.size(); i++)
+            if (contestants[i].team == 1)
+                contestants.erase(contestants.begin() + i);
+    }
+
+    // team 3 vs team 4
+    if (team3Weigth < team4Weigth)
+    {
+        winner2 = 3;
+        winnerWeigth2 = team4Weigth;
+        for (i = 0; i < contestants.size(); i++)
+            if (contestants[i].team == 2)
+                contestants.erase(contestants.begin() + i);
+    }
+    else
+    {
+        winner2 = 2;
+        winnerWeigth2 = team3Weigth;
+        for (i = 0; i < contestants.size(); i++)
+            if (contestants[i].team == 3)
+                contestants.erase(contestants.begin() + i);
+    }
+
+    // winner team 1 vs winner team 2
+    if (winnerWeigth1 < winnerWeigth2)
+    {
+        for (i = 0; i < contestants.size(); i++)
+            if (contestants[i].team == winner1)
+                contestants.erase(contestants.begin() + i);
+    }
+    else
+    {
+        for (i = 0; i < contestants.size(); i++)
+            if (contestants[i].team == winner2)
+                contestants.erase(contestants.begin() + i);
+    }
+
+    /*  // another method which returns the same result
+        int winnerWeigth, winnerTeam;
+
+        // calculate the maximum weigth
+        winnerWeigth1 = max(team1Weigth, team2Weigth);
+        winnerWeigth2 = max(team3Weigth, team4Weigth);
+        winnerWeigth = max(winnerWeigth1, winnerWeigth2);
+
+        // find the team which has the maximum weigth
+        if (winnerWeigth == team1Weigth)
+            winnerTeam = 0;
+        else if (winnerWeigth == team2Weigth)
+            winnerTeam = 1;
+        else if (winnerWeigth == team3Weigth)
+            winnerTeam = 2;
+        else
+            winnerTeam = 3;
+
+        for (i = 0; i < contestants.size(); i++) // remove the contestants who don't belong to the winning team
+            if (contestants[i].team != winnerTeam)
+                contestants.erase(contestants.begin() + i);
+     */
+
+    // print the remaining contestants after second round
+    cout
+        << endl
+        << "CONTESTANTS AFTER SECOND ROUND"
+        << endl
+        << "Number "
+        << "Name "
+        << "Surname "
+        << "City "
+        << "Debt "
+        << "Weight"
+        << endl;
+    for (i = 0; i < contestants.size(); i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+
+    for (i = 0; i < contestants.size() and contestants.size() > 14; i++) // remove some contestants
+        contestants.erase(contestants.begin() + i);
+
+    // print the remaining contestants after second round
+    cout
+        << endl
+        << "CONTESTANTS AFTER SECOND ROUND"
+        << endl
+        << "Number "
+        << "Name "
+        << "Surname "
+        << "City "
+        << "Debt "
+        << "Weight"
+        << endl;
+    for (i = 0; i < contestants.size(); i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+
+    // cancel the previous teams
+    for (i = 0; i < contestants.size(); i++)
+    {
+        contestants[i].team = -1;
+        contestants[i].wildcard = false;
     }
 
     return 0;
