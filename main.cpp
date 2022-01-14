@@ -15,6 +15,7 @@ public:
     string city;
     long int debt;
     int weigth;
+    Player() {}
     Player(string n, string s, string c, long int d, int w)
     {
         this->name = n;
@@ -23,6 +24,7 @@ public:
         this->debt = d;
         this->weigth = w;
     }
+    ~Player() {}
 };
 
 class Contestant : public Player
@@ -87,10 +89,41 @@ string nameGenerator(int length)
     return name;
 } // function that generate a name of a specified length
 
+int rps(int player1, int player2) // rock/paper/scissors function needed in genken mini-game
+{
+    if (player1 == 1 && player2 == 2)
+    {
+        return player2;
+    }
+    else if (player1 == 2 && player2 == 3)
+    {
+        return player2;
+    }
+    else if (player1 == 3 && player2 == 1)
+    {
+        return player2;
+    }
+    else if (player1 == 1 && player2 == 3)
+    {
+        return player1;
+    }
+    else if (player1 == 2 && player2 == 1)
+    {
+        return player1;
+    }
+    else if (player1 == 3 && player2 == 2)
+    {
+        return player1;
+    }
+    else
+        return 0;
+}
+
 int main()
 {
     vector<Contestant> contestants;
     vector<Supervisor> supervisors;
+    Supervisor aux;
     int i, j, k, nameLength, surnameLength, cityLength, debt, weigth, maskID, maskNumber[3] = {0, 0, 0}, v[11], global[99] = {}, contestantID, check;
     string name, surname, city, mask, maskTypes[3] = {"rectangle", "triangle", "circle"};
 
@@ -232,6 +265,19 @@ int main()
         for (j = 0; j < 11; j++)
             cout << supervisors[i].getContestants()[j] << " ";
         cout << endl;
+    }
+
+    // calculate the total debt of the contestants
+    int totalDebt;
+    for (i = 0; i < contestants.size(); i++)
+        totalDebt += contestants[i].debt;
+
+    // calculate the sum which supervisor could get
+    for (i = 0; i < 9; i++)
+    {
+        supervisors[i].debt *= (-1);
+        for (j = 0; j < 11; j++)
+            supervisors[i].debt += contestants[supervisors[i].getContestants()[j]].debt;
     }
 
     // FIRST GAME: "RED LIGHT GREEN LIGHT"
@@ -502,6 +548,199 @@ int main()
     {
         contestants[i].team = -1;
     }
+
+    // LAST GAME: "GENKEN"
+    k = contestants.size() % 2; // find how many players are lucky
+    for (i = 0; i < k; i++)
+    {
+        do
+        {
+            contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
+        } while (contestants[contestantID - 1].wildcard == true);
+        contestants[contestantID - 1].wildcard = true;
+    }
+    k = (int)contestants.size() / 2; // theoretical number of teams
+    for (i = 0; i < k; i++)
+    {
+        j = 0; // practical number of teams
+        while (j < 2)
+        {
+            do
+            {
+                contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;             // assign contestant to the team
+            j++;                                                // increment the number of contestants of the team
+        }
+    }
+
+    for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
+    {
+        for (j = i + 1; j < contestants.size(); j++)        // iterate through contestants
+            if (contestants[i].team == contestants[j].team) // check if the two contestants have the same team
+            {
+            genken1:
+                try
+                {
+                    random1 = rand() % 3 + 1; // generate a random number for first contestant
+                    random2 = rand() % 3 + 1; // generate a random number for second contestant
+
+                    if (rps(random1, random2) == random1) // compare the generated numbers
+                    {
+                        contestants.erase(contestants.begin() + j);
+                        break;
+                    }
+                    else if (rps(random1, random2) == random2)
+                    {
+                        contestants.erase(contestants.begin() + i);
+                        i--;
+                        break;
+                    }
+                    else
+                        throw 1;
+                }
+                catch (int s)
+                {
+                    goto genken1;
+                }
+            }
+    }
+
+    // cancel the previous teams
+    for (i = 0; i < contestants.size(); i++)
+    {
+        contestants[i].team = -1;
+    }
+    k = (int)contestants.size() / 2; // theoretical number of teams
+    for (i = 0; i < k; i++)
+    {
+        j = 0; // practical number of teams
+        while (j < 2)
+        {
+            do
+            {
+                contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;             // assign contestant to the team
+            j++;                                                // increment the number of contestants of the team
+        }
+    }
+
+    for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
+    {
+        for (j = i + 1; j < contestants.size(); j++)        // iterate through contestants
+            if (contestants[i].team == contestants[j].team) // check if the two contestants have the same team
+            {
+            genken2:
+                try
+                {
+                    random1 = rand() % 3 + 1; // generate a random number for first contestant
+                    random2 = rand() % 3 + 1; // generate a random number for second contestant
+
+                    if (rps(random1, random2) == random1) // compare the generated numbers
+                    {
+                        contestants.erase(contestants.begin() + j);
+                        break;
+                    }
+                    else if (rps(random1, random2) == random2)
+                    {
+                        contestants.erase(contestants.begin() + i);
+                        i--;
+                        break;
+                    }
+                    else
+                        throw 1;
+                }
+                catch (int s)
+                {
+                    goto genken2;
+                }
+            }
+    }
+
+genken3:
+    try
+    {
+        random1 = rand() % 3 + 1; // generate a random number for first contestant
+        random2 = rand() % 3 + 1; // generate a random number for second contestant
+
+        if (rps(random1, random2) == random1) // compare the generated numbers
+        {
+            contestants.erase(contestants.begin() + 1);
+        }
+        else if (rps(random1, random2) == random2)
+        {
+            contestants.erase(contestants.begin() + 0);
+        }
+        else
+            throw 1;
+    }
+    catch (int s)
+    {
+        goto genken3;
+    }
+
+    // print the winning contestant
+    cout
+        << endl
+        << "WINNER"
+        << endl
+        << "Number "
+        << "Name "
+        << "Surname "
+        << "City "
+        << "Debt "
+        << "Weight"
+        << endl;
+    for (i = 0; i < contestants.size(); i++)
+        cout << contestants[i].getNumber() << " " << contestants[i].name << " " << contestants[i].surname << " " << contestants[i].city << " " << contestants[i].debt << " " << contestants[i].weigth << endl;
+
+    cout << "The winner won " << totalDebt << endl; // print the sum won by the winner
+
+    supervisors[contestants[0].getSupervisor()].debt = contestants[0].debt * 10; // calculate the sum won by the supervisor of the winner
+
+    // order the supervisors by the sum won
+    for (i = 0; i < 8; i++)
+        for (j = i + 1; j < 9; j++)
+            if (supervisors[i].debt < supervisors[j].debt)
+            {
+                aux = supervisors[i];
+                supervisors[i] = supervisors[j];
+                supervisors[j] = aux;
+            }
+    // print the supervisors and the sum won by each
+    cout << endl
+         << "SUPERVISORS"
+         << endl
+         << "Name "
+         << "Surname "
+         << "City "
+         << "Weight "
+         << "Mask"
+         << "Won "
+         << endl;
+    for (i = 0; i < 9; i++)
+        cout << supervisors[i].name << " " << supervisors[i].surname << " " << supervisors[i].city << " " << supervisors[i].weigth << " " << supervisors[i].getMask() << " " << supervisors[i].debt << endl;
+
+    int teamRectangle = 0, teamTriangle = 0, teamCircle = 0;
+    for (i = 0; i < 9; i++) // calculate the sum won by each team of supervisors
+    {
+        if (supervisors[i].mask == "rectangle")
+            teamRectangle += supervisors[i].debt;
+        else if (supervisors[i].mask == "triangle")
+            teamTriangle += supervisors[i].debt;
+        else
+            teamCircle += supervisors[i].debt;
+    }
+
+    k = max(max(teamRectangle, teamTriangle), teamCircle); // calculate which team won the biggest sum
+    // print which team won the biggest sum
+    if (k == teamRectangle)
+        cout << "Team Rectangle won the biggest sum." << endl;
+    else if (k == teamTriangle)
+        cout << "Team Triangle won the biggest sum." << endl;
+    else if (k == teamCircle)
+        cout << "Team Circle won the biggest sum." << endl;
 
     return 0;
 }
