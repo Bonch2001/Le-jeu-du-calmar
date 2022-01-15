@@ -529,7 +529,7 @@ int main()
     }
 
     // print the remaining contestants after third round
-    cout
+    cout 
         << endl
         << "CONTESTANTS AFTER THIRD ROUND"
         << endl
@@ -550,15 +550,18 @@ int main()
     }
 
     // LAST GAME: "GENKEN"
-    k = contestants.size() % 2; // find how many players are lucky
-    for (i = 0; i < k; i++)
-    {
-        do
+
+    // code needed to find the last two contestants if the contestants were playing randomly
+    /*    k = contestants.size() % 2; // find how many players are lucky
+        for (i = 0; i < k; i++)
         {
-            contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
-        } while (contestants[contestantID - 1].wildcard == true);
-        contestants[contestantID - 1].wildcard = true;
-    }
+            do
+            {
+                contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].wildcard == true);
+            contestants[contestantID - 1].wildcard = true;
+        }
+
     k = (int)contestants.size() / 2; // theoretical number of teams
     for (i = 0; i < k; i++)
     {
@@ -567,10 +570,10 @@ int main()
         {
             do
             {
-                contestantID = rand() % contestants.size() + 1; // generate a random ID of the contestants
-            } while (contestants[contestantID - 1].team != -1); // test if the contestant has already a team
-            contestants[contestantID - 1].team = i;             // assign contestant to the team
-            j++;                                                // increment the number of contestants of the team
+                contestantID = rand() % contestants.size() + 1;                                                   // generate a random ID of the contestants
+            } while (contestants[contestantID - 1].team != -1 || contestants[contestantID - 1].wildcard == true); // test if the contestant has already a team
+            contestants[contestantID - 1].team = i;                                                               // assign contestant to the team
+            j++;                                                                                                  // increment the number of contestants of the team
         }
     }
 
@@ -610,6 +613,7 @@ int main()
     for (i = 0; i < contestants.size(); i++)
     {
         contestants[i].team = -1;
+        contestants[i].wildcard = false;
     }
     k = (int)contestants.size() / 2; // theoretical number of teams
     for (i = 0; i < k; i++)
@@ -624,6 +628,99 @@ int main()
             contestants[contestantID - 1].team = i;             // assign contestant to the team
             j++;                                                // increment the number of contestants of the team
         }
+    }
+
+    for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
+    {
+        for (j = i + 1; j < contestants.size(); j++)        // iterate through contestants
+            if (contestants[i].team == contestants[j].team) // check if the two contestants have the same team
+            {
+            genken2:
+                try
+                {
+                    random1 = rand() % 3 + 1; // generate a random number for first contestant
+                    random2 = rand() % 3 + 1; // generate a random number for second contestant
+
+                    if (rps(random1, random2) == random1) // compare the generated numbers
+                    {
+                        contestants.erase(contestants.begin() + j);
+                        break;
+                    }
+                    else if (rps(random1, random2) == random2)
+                    {
+                        contestants.erase(contestants.begin() + i);
+                        i--;
+                        break;
+                    }
+                    else
+                        throw 1;
+                }
+                catch (int s)
+                {
+                    goto genken2;
+                }
+            }
+    } */
+
+    contestants[0].wildcard = true; // first contestant is lucky because the number of contestants is odd
+
+    j = -1;
+    k = 3; // number of teams
+    for (i = contestants.size() - 1; i > 0; i--)
+    {
+        j++;
+        if (j % 2 == 0)
+            k--;
+        contestants[i].team = k; // assign the team numbers to contestants in descending order
+    }
+
+    for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
+    {
+        for (j = i + 1; j < contestants.size(); j++)        // iterate through contestants
+            if (contestants[i].team == contestants[j].team) // check if the two contestants have the same team
+            {
+            genken1:
+                try
+                {
+                    random1 = rand() % 3 + 1; // generate a random number for first contestant
+                    random2 = rand() % 3 + 1; // generate a random number for second contestant
+
+                    if (rps(random1, random2) == random1) // compare the generated numbers
+                    {
+                        contestants.erase(contestants.begin() + j);
+                        break;
+                    }
+                    else if (rps(random1, random2) == random2)
+                    {
+                        contestants.erase(contestants.begin() + i);
+                        i--;
+                        break;
+                    }
+                    else
+                        throw 1;
+                }
+                catch (int s)
+                {
+                    goto genken1;
+                }
+            }
+    }
+
+    // cancel the previous teams
+    for (i = 0; i < contestants.size(); i++)
+    {
+        contestants[i].team = -1;
+        contestants[i].wildcard = false;
+    }
+    // make new teams for the next round
+    j = -1;
+    k = 2; // number of teams
+    for (i = contestants.size() - 1; i >= 0; i--)
+    {
+        j++;
+        if (j % 2 == 0)
+            k--;
+        contestants[i].team = k; // assign the team numbers to contestants in descending order
     }
 
     for (i = 0; i < contestants.size() - 1; i++) // iterate through contestants
