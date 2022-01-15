@@ -272,7 +272,7 @@ int main()
     for (i = 0; i < contestants.size(); i++)
         totalDebt += contestants[i].debt;
 
-    // calculate the sum which supervisor could get
+    // calculate the sum each supervisor could get
     for (i = 0; i < 9; i++)
     {
         supervisors[i].debt *= (-1);
@@ -379,9 +379,9 @@ int main()
     }
     else
     {
-        winner1 = 0;
-        winnerWeigth1 = team1Weigth;
-        for (i = 0; i < contestants.size(); i++)
+        winner1 = 0;                             // save the index of winning team
+        winnerWeigth1 = team1Weigth;             // save the weigth of winning team
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
             if (contestants[i].team == 1)
                 contestants.erase(contestants.begin() + i);
     }
@@ -389,17 +389,17 @@ int main()
     // team 3 vs team 4
     if (team3Weigth < team4Weigth)
     {
-        winner2 = 3;
-        winnerWeigth2 = team4Weigth;
-        for (i = 0; i < contestants.size(); i++)
+        winner2 = 3;                             // save the index of winning team
+        winnerWeigth2 = team4Weigth;             // save the weigth of winning team
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
             if (contestants[i].team == 2)
                 contestants.erase(contestants.begin() + i);
     }
     else
     {
-        winner2 = 2;
-        winnerWeigth2 = team3Weigth;
-        for (i = 0; i < contestants.size(); i++)
+        winner2 = 2;                             // save the index of winning team
+        winnerWeigth2 = team3Weigth;             // save the weigth of winning team
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
             if (contestants[i].team == 3)
                 contestants.erase(contestants.begin() + i);
     }
@@ -407,13 +407,13 @@ int main()
     // winner team 1 vs winner team 2
     if (winnerWeigth1 < winnerWeigth2)
     {
-        for (i = 0; i < contestants.size(); i++)
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
             if (contestants[i].team == winner1)
                 contestants.erase(contestants.begin() + i);
     }
     else
     {
-        for (i = 0; i < contestants.size(); i++)
+        for (i = 0; i < contestants.size(); i++) // remove the contestants of the losing team
             if (contestants[i].team == winner2)
                 contestants.erase(contestants.begin() + i);
     }
@@ -519,9 +519,9 @@ int main()
                         break;
                     }
                     else
-                        throw "Generated values are equal!";
+                        throw 1;
                 }
-                catch (string s)
+                catch (int s)
                 {
                     goto marbles;
                 }
@@ -716,7 +716,7 @@ genken3:
          << "Surname "
          << "City "
          << "Weight "
-         << "Mask"
+         << "Mask "
          << "Won "
          << endl;
     for (i = 0; i < 9; i++)
@@ -736,11 +736,17 @@ genken3:
     k = max(max(teamRectangle, teamTriangle), teamCircle); // calculate which team won the biggest sum
     // print which team won the biggest sum
     if (k == teamRectangle)
-        cout << "Team Rectangle won the biggest sum." << endl;
+        cout << "Team Rectangle won the biggest sum. " << teamRectangle << endl
+             << "Team Triangle won " << teamTriangle << endl
+             << "Team Circle won " << teamCircle << endl;
     else if (k == teamTriangle)
-        cout << "Team Triangle won the biggest sum." << endl;
+        cout << "Team Triangle won the biggest sum. " << teamTriangle << endl
+             << "Team Circle won " << teamCircle << endl
+             << "Team Rectangle won " << teamRectangle << endl;
     else if (k == teamCircle)
-        cout << "Team Circle won the biggest sum." << endl;
+        cout << "Team Circle won the biggest sum. " << teamCircle << endl
+             << "Team Rectangle won " << teamRectangle << endl
+             << "Team Triangle won " << teamTriangle << endl;
 
     return 0;
 }
