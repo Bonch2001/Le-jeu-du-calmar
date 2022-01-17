@@ -529,7 +529,7 @@ int main()
     }
 
     // print the remaining contestants after third round
-    cout 
+    cout
         << endl
         << "CONTESTANTS AFTER THIRD ROUND"
         << endl
@@ -832,6 +832,7 @@ genken3:
 
     k = max(max(teamRectangle, teamTriangle), teamCircle); // calculate which team won the biggest sum
     // print which team won the biggest sum
+    cout << endl;
     if (k == teamRectangle)
         cout << "Team Rectangle won the biggest sum. " << teamRectangle << endl
              << "Team Triangle won " << teamTriangle << endl
